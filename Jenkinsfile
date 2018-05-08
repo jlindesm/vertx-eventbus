@@ -47,9 +47,14 @@ if (utils.isCD()) {
     stage('Rollout to Stage') {
       unstash stashName
       setupScript?.setupEnvironmentPre(envStage)
-      apply {
-        environment = envStage
+      for(i = 0; i < files.length; i++) {
+        echo "applying the -${files[i].path}- to Kubernetes"
+        def fileContent = readFile(files[i].path)
+        kubernetesApply(file: fileContent,environment: envStage)
       }
+//      apply {
+//        environment = envStage
+//      }
       setupScript?.setupEnvironmentPost(envStage)
     }
 
